@@ -1,15 +1,7 @@
 package main
 
-import (
-	"fyne.io/fyne/app"
-	"fyne.io/fyne/widget"
-)
+import "groupietracker/view"
 
 func main() {
-	a := app.New()
-	w := a.NewWindow("Hello word")
-
-	w.SetContent(widget.NewLabel("Hello"))
-
-	w.ShowAndRun()
+	view.Begin()
 }
