@@ -51,6 +51,9 @@ type DataRelations struct {
 
 func GetArtistData() (Artist, error) {
 	var Data Artist
+	DateData, err := GetDateData()
+	LocationData, err := GetLocationData()
+	DataRelation, err := GetRelationsData()
 	resArtist, err := http.Get(URL + "/artists")
 	if err != nil {
 		return Data, err
@@ -62,6 +65,72 @@ func GetArtistData() (Artist, error) {
 	}
 
 	err = json.Unmarshal(ArtistData, &Data)
+	if err != nil {
+		return Data, err
+	}
+	for i, _ := range Data {
+		Data[i].ConcertDates = DateData.Dates[i].Dates
+		Data[i].Locations = LocationData.Location[i].Locations
+		Data[i].Relations = make(map[string][]string)
+		for key, value := range DataRelation.Relation[i].DatesLocations {
+			Data[i].Relations[key] = value
+		}
+	}
+
+	return Data, err
+}
+
+func GetLocationData() (LocationIndex, error) {
+	var Data LocationIndex
+	resData, err := http.Get(URL + "/locations")
+	if err != nil {
+		return Data, err
+	}
+
+	DateData, err := ioutil.ReadAll(resData.Body)
+	if err != nil {
+		return Data, err
+	}
+
+	err = json.Unmarshal(DateData, &Data)
+	if err != nil {
+		return Data, nil
+	}
+	return Data, err
+}
+
+func GetDateData() (DatesIndex, error) {
+	var Data DatesIndex
+	resData, err := http.Get(URL + "/dates")
+	if err != nil {
+		return Data, err
+	}
+
+	DateData, err := ioutil.ReadAll(resData.Body)
+	if err != nil {
+		return Data, err
+	}
+
+	err = json.Unmarshal(DateData, &Data)
+	if err != nil {
+		return Data, nil
+	}
+	return Data, err
+}
+
+func GetRelationsData() (RelationIndex, error) {
+	var Data RelationIndex
+	resData, err := http.Get(URL + "/relation")
+	if err != nil {
+		return Data, err
+	}
+
+	RelationData, err := ioutil.ReadAll(resData.Body)
+	if err != nil {
+		return Data, err
+	}
+
+	err = json.Unmarshal(RelationData, &Data)
 	if err != nil {
 		return Data, err
 	}
