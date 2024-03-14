@@ -66,3 +66,36 @@ func infoDate(id int) {
 		buttonstatus = 1
 	}
 }
+
+func Date(date string) string {
+	dstring := strings.Split(date, "-")
+	switch dstring[1] {
+	case "01":
+		mois = "janvier"
+	case "02":
+		mois = "février"
+	case "03":
+		mois = "mars"
+	case "04":
+		mois = "avril"
+	case "05":
+		mois = "mai"
+	case "06":
+		mois = "juin"
+	case "07":
+		mois = "juillet"
+	case "08":
+		mois = "août"
+	case "09":
+		mois = "septembre"
+	case "10":
+		mois = "octobre"
+	case "11":
+		mois = "novembre"
+	case "12":
+		mois = "décembre"
+	}
+	dstring[1] = mois
+	ds := strings.Join(dstring, " ")
+	return ds
+}
