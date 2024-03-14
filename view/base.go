@@ -8,6 +8,8 @@ import (
 	"strconv"
 	"time"
 
+	"fyne.io/fyne"
+	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/theme"
@@ -116,4 +118,52 @@ func MainPage() {
 	grid2.Refresh()
 	full := container.NewBorder(toolBar, nil, nil, nil, grid2)
 	myApp.Window.SetContent(full)
+}
+
+func ButtonImg(id int) *fyne.Container {
+	r, _ := fyne.LoadResourceFromURLString(testmodel.GetArtistsID(id).Image)
+	img := canvas.NewImageFromResource(r)
+	img.SetMinSize(fyne.NewSize(300, 300))
+	btn := widget.NewButton(" ", func() {
+		SecondPage(id)
+	})
+	container1 := container.New(
+		layout.NewMaxLayout(),
+		btn,
+		widget.NewCard(testmodel.GetArtistsID(id).Name, "", img),
+	)
+	return container1
+}
+
+func FullScreen(window fyne.Window, verifZoombool bool) {
+	if verifZoombool {
+		fullScreen = false
+		window.SetFullScreen(fullScreen)
+	} else {
+		fullScreen = true
+		window.SetFullScreen(fullScreen)
+	}
+}
+
+func Filter() *widget.RadioGroup {
+	var value string
+	radio := widget.NewRadioGroup([]string{"Trier par Date de creation du groupe. Du plus ancien au plus récent", "Trier par Date de creation du groupe. Du plus récent au plus ancien",
+		"Trier par Date de sortie du premier album. Du plus ancien au plus récent", "Trier par Date de sortie du premier album. Du plus récent au plus ancien",
+		"Trier par Default"}, func(value string) {
+		switch value {
+		case "Trier par Date de creation du groupe. Du plus ancien au plus récent":
+			filtre = 2
+		case "Trier par Date de creation du groupe. Du plus récent au plus ancien":
+			filtre = 3
+		case "Trier par Date de sortie du premier album. Du plus ancien au plus récent":
+			filtre = 4
+		case "Trier par Date de sortie du premier album. Du plus récent au plus ancien":
+			filtre = 5
+		case "Trier par Default":
+			filtre = 1
+		}
+		MainPage()
+	})
+	value = value
+	return radio
 }
