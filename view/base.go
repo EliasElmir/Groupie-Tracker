@@ -1,11 +1,9 @@
 package view
 
 import (
-	"fmt"
 	testmodel "groupietracker/controller/modelController"
 	"groupietracker/model"
 	"sort"
-	"strconv"
 	"time"
 
 	"fyne.io/fyne/v2"
@@ -29,8 +27,6 @@ func MainPage() {
 	if b == 0 {
 		filtre = 1
 		b = 2
-		fmt.Print("B:")
-		fmt.Println(b)
 	}
 	filter = filtre
 	toolBar := widget.NewToolbar(
@@ -66,8 +62,7 @@ func MainPage() {
 		sort.Slice(artists, func(i, j int) bool {
 			return artists[i].CreationDate < artists[j].CreationDate
 		})
-		for i, artist := range artists {
-			fmt.Println(strconv.Itoa(i+1)+".", artist.Name, "(", artist.CreationDate, ")")
+		for _, artist := range artists {
 			grid.Add(ButtonImg(int(artist.Id)))
 		}
 	case 3:
@@ -79,8 +74,7 @@ func MainPage() {
 		sort.Slice(artists, func(i, j int) bool {
 			return artists[i].CreationDate > artists[j].CreationDate
 		})
-		for i, artist := range artists {
-			fmt.Println(strconv.Itoa(i+1)+".", artist.Name, "(", artist.CreationDate, ")")
+		for _, artist := range artists {
 			grid.Add(ButtonImg(int(artist.Id)))
 		}
 	case 4:
@@ -94,8 +88,7 @@ func MainPage() {
 			time2, _ := time.Parse("02-01-2006", artists[j].FirstAlbum)
 			return time1.Year() < time2.Year()
 		})
-		for i, artist := range artists {
-			fmt.Println(strconv.Itoa(i+1)+".", artist.Name, "(", artist.FirstAlbum, ")")
+		for _, artist := range artists {
 			grid.Add(ButtonImg(int(artist.Id)))
 		}
 	case 5:
@@ -109,8 +102,7 @@ func MainPage() {
 			time2, _ := time.Parse("02-01-2006", artists[j].FirstAlbum)
 			return time1.Year() > time2.Year()
 		})
-		for i, artist := range artists {
-			fmt.Println(strconv.Itoa(i+1)+".", artist.Name, "(", artist.FirstAlbum, ")")
+		for _, artist := range artists {
 			grid.Add(ButtonImg(int(artist.Id)))
 		}
 	}
@@ -146,7 +138,6 @@ func FullScreen(window fyne.Window, verifZoombool bool) {
 }
 
 func Filter() *widget.RadioGroup {
-	var value string
 	radio := widget.NewRadioGroup([]string{"Trier par Date de creation du groupe. Du plus ancien au plus récent", "Trier par Date de creation du groupe. Du plus récent au plus ancien",
 		"Trier par Date de sortie du premier album. Du plus ancien au plus récent", "Trier par Date de sortie du premier album. Du plus récent au plus ancien",
 		"Trier par Default"}, func(value string) {
@@ -164,6 +155,5 @@ func Filter() *widget.RadioGroup {
 		}
 		MainPage()
 	})
-	value = value
 	return radio
 }

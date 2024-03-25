@@ -1,7 +1,6 @@
 package view
 
 import (
-	"fmt"
 	DRL "groupietracker/controller/infoDRL"
 	"groupietracker/controller/infoPage"
 	testmodel "groupietracker/controller/modelController"
@@ -27,7 +26,6 @@ func HomePage() *fyne.Container {
 }
 
 func SecondPage(id int) {
-	fmt.Print(testmodel.GetArtistsID(id).Name)
 	r, _ := fyne.LoadResourceFromURLString(testmodel.GetArtistsID(id).Image)
 	img := canvas.NewImageFromResource(r)
 	img.FillMode = canvas.ImageFillOriginal
