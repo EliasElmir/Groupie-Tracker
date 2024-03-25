@@ -14,7 +14,8 @@ var (
 func Begin() {
 	myApp.App = app.New()
 	myApp.Window = myApp.App.NewWindow("Groupie Tracker.")
-	MainPage()
+	// MainPage()
+	home()
 	myApp.Window.Resize(fyne.NewSize(225, 875))
 	myApp.Window.ShowAndRun()
 }
