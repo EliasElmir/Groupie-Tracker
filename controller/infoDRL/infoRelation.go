@@ -1,6 +1,5 @@
 package infoDRL //DRL = Date Relation Location
 import (
-	"fmt"
 	testmodel "groupietracker/controller/modelController"
 	"image/color"
 	"strings"
@@ -15,7 +14,6 @@ import (
 
 func RelationButton(id int) *fyne.Container {
 	relation := widget.NewButton("Relation", func() {
-		fmt.Print("relation")
 		Relation(id)
 	})
 	contain := container.NewVBox(relation)
@@ -47,7 +45,6 @@ func Relation(id int) {
 			locationl := strings.Split(location, "_")
 			locationli := strings.Join(locationl, " ")
 			ld = "- " + cases.Title(language.Und).String(locationli) + " : le " + dat + ","
-			fmt.Println(ld)
 			stld = stld + ld
 		}
 		var lod []string = strings.Split(stld, ",")

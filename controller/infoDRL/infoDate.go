@@ -1,7 +1,6 @@
 package infoDRL // DRL = Date Relation Location
 
 import (
-	"fmt"
 	testmodel "groupietracker/controller/modelController"
 	"strings"
 
@@ -17,7 +16,6 @@ var (
 
 func DateButton(id int) *fyne.Container {
 	date := widget.NewButton("Date", func() {
-		fmt.Print("Date")
 		infoDate(id)
 	})
 	contain := container.NewVBox(date)
@@ -25,7 +23,6 @@ func DateButton(id int) *fyne.Container {
 }
 
 func infoDate(id int) {
-	fmt.Println(buttonstatus)
 	if buttonstatus == 0 {
 		var container = container.NewGridWithColumns(1)
 		var listDate string
@@ -45,7 +42,6 @@ func infoDate(id int) {
 				listDate = listDate + idate + " - "
 			}
 		}
-		fmt.Println(listDate)
 		var testDate []string = strings.Split(listDate, "*")
 		v = 0
 		for _, AllDate := range testDate {
@@ -53,7 +49,6 @@ func infoDate(id int) {
 				DateAll := AllDate
 				contain := widget.NewButton(DateAll,
 					func() {
-						fmt.Print(DateAll)
 					},
 				)
 				container.Add(contain)

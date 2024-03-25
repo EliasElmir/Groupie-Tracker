@@ -1,7 +1,6 @@
 package infoDRL // DRL = Date Relation Location
 
 import (
-	"fmt"
 	testmodel "groupietracker/controller/modelController"
 	"image/color"
 	"strings"
@@ -21,7 +20,6 @@ var (
 
 func LocationButton(id int) *fyne.Container {
 	Concert := widget.NewButton("Concert", func() {
-		fmt.Print("location")
 		Location(id)
 	})
 	contain := container.NewVBox(Concert)
@@ -30,7 +28,6 @@ func LocationButton(id int) *fyne.Container {
 
 func Location(id int) {
 	DRLINFO.RemoveAll()
-	fmt.Print(buttonstatus)
 	if buttonstatus == 0 {
 		var loca string
 		var list string
@@ -51,7 +48,6 @@ func Location(id int) {
 			place := varloca
 			contain := widget.NewButton(place,
 				func() {
-					fmt.Print(place)
 					DateLocation(id, place)
 				},
 			)
