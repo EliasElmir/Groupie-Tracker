@@ -29,7 +29,7 @@ func SecondPage(id int) {
 	r, _ := fyne.LoadResourceFromURLString(testmodel.GetArtistsID(id).Image)
 	img := canvas.NewImageFromResource(r)
 	img.FillMode = canvas.ImageFillOriginal
-	img.SetMinSize(fyne.NewSize(240, 240))
+	img.SetMinSize(fyne.NewSize(180, 180))
 	GroupeInfo := infoPage.InfoGroupe(id)
 	locationButton := DRL.LocationButton(id)
 	//dateButton := DRL.DateButton(id)
