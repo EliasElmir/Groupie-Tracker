@@ -4,13 +4,14 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 )
 
 const URL = "https://groupietrackers.herokuapp.com/api"
 
 type Artist []DataArtist
 type LocationIndex struct {
-	Location []DataLocations `json:"index"`
+	Location []DataLocation `json:"index"`
 }
 
 type DatesIndex struct {
@@ -22,21 +23,25 @@ type RelationIndex struct {
 }
 
 type DataArtist struct {
-	Id           int      `json:"id"`
-	Image        string   `json:"image"`
-	Name         string   `json:"name"`
-	Members      []string `json:"members"`
-	CreationDate int      `json:"creationDate"`
-	FirstAlbum   string   `json:"firstAlbum"`
-	Locations    []string
-	ConcertDates []string
-	Relations    map[string][]string
+	Id              int      `json:"id"`
+	Image           string   `json:"image"`
+	Name            string   `json:"name"`
+	Members         []string `json:"members"`
+	CreationDate    int      `json:"creationDate"`
+	FirstAlbum      string   `json:"firstAlbum"`
+	LocationURL     string   `json:"locations"`
+	ConcertDatesURL string   `json:"concertDates"`
+	RelationURL     string   `json:"relations"`
+	Locations       []string
+	ConcertDates    []string
+	Relations       map[string][]string
 }
 
-type DataLocations struct {
+type DataLocation struct {
 	Id        int      `json:"id"`
 	Locations []string `json:"locations"`
-	Dates     []string `json:"dates"`
+	DatesURL  string   `json:"dates"`
+	Dates     []string
 }
 
 type DataDate struct {
@@ -49,11 +54,9 @@ type DataRelations struct {
 	DatesLocations map[string][]string `json:"datesLocations"`
 }
 
-func GetArtistData() (Artist, error) {
+func GetArtistData(isAllDataNeeded bool) (Artist, error) {
 	var Data Artist
-	DateData, err := GetDateData()
-	LocationData, err := GetLocationData()
-	DataRelation, err := GetRelationsData()
+
 	resArtist, err := http.Get(URL + "/artists")
 	if err != nil {
 		return Data, err
@@ -65,13 +68,23 @@ func GetArtistData() (Artist, error) {
 	}
 
 	err = json.Unmarshal(ArtistData, &Data)
-
-	for i, _ := range Data {
-		Data[i].ConcertDates = DateData.Dates[i].Dates
-		Data[i].Locations = LocationData.Location[i].Locations
-		Data[i].Relations = make(map[string][]string)
-		for key, value := range DataRelation.Relation[i].DatesLocations {
-			Data[i].Relations[key] = value
+	if err != nil {
+		return Data, err
+	}
+	if isAllDataNeeded {
+		DateData, err := GetDateData()
+		LocationData, err := GetLocationData()
+		DataRelation, err := GetRelationsData()
+		if err != nil {
+			return nil, err
+		}
+		for i, _ := range Data {
+			Data[i].ConcertDates = DateData.Dates[i].Dates
+			Data[i].Locations = LocationData.Location[i].Locations
+			Data[i].Relations = make(map[string][]string)
+			for key, value := range DataRelation.Relation[i].DatesLocations {
+				Data[i].Relations[key] = value
+			}
 		}
 	}
 
@@ -111,7 +124,7 @@ func GetDateData() (DatesIndex, error) {
 
 	err = json.Unmarshal(DateData, &Data)
 	if err != nil {
-		return Data, nil
+		return Data, err
 	}
 	return Data, err
 }
@@ -136,24 +149,85 @@ func GetRelationsData() (RelationIndex, error) {
 	return Data, err
 }
 
-func GetDateByID(id int) DataDate {
+func GetDateByID(id int) (DataDate, error) {
 	var Data DataDate
-	resData, _ := http.Get(URL + "/dates/" + string(id))
+	resData, err := http.Get(URL + "/dates/" + strconv.Itoa(id))
+	if err != nil {
+		return Data, err
+	}
 
-	RelationData, _ := ioutil.ReadAll(resData.Body)
+	DateData, err := ioutil.ReadAll(resData.Body)
+	if err != nil {
+		return Data, err
+	}
 
-	_ = json.Unmarshal(RelationData, &Data)
+	err = json.Unmarshal(DateData, &Data)
+	if err != nil {
+		return Data, err
+	}
 
-	return Data
+	return Data, err
 }
 
-func GetArtistByID(id int) DataArtist {
+func GetArtistByID(id int) (DataArtist, error) {
 	var Data DataArtist
-	resData, _ := http.Get(URL + "/artists/" + string(id))
+	resData, err := http.Get(URL + "/artists/" + strconv.Itoa(id))
+	if err != nil {
+		return Data, err
+	}
 
-	RelationData, _ := ioutil.ReadAll(resData.Body)
+	ArtistData, err := ioutil.ReadAll(resData.Body)
+	if err != nil {
+		return Data, err
+	}
 
-	_ = json.Unmarshal(RelationData, &Data)
+	err = json.Unmarshal(ArtistData, &Data)
+	if err != nil {
+		return Data, err
+	}
 
-	return Data
+	return Data, err
+}
+
+func GetLocationByID(id int) (DataLocation, error) {
+	var Data DataLocation
+	resData, err := http.Get(URL + "/locations/" + strconv.Itoa(id))
+	if err != nil {
+		return Data, err
+	}
+
+	LocationData, err := ioutil.ReadAll(resData.Body)
+	if err != nil {
+		return Data, err
+	}
+
+	err = json.Unmarshal(LocationData, &Data)
+	if err != nil {
+		return Data, err
+	}
+
+	DatesData, err := GetDateByID(id)
+	Data.Dates = DatesData.Dates
+
+	return Data, err
+}
+
+func GetRelationByID(id int) (DataRelations, error) {
+	var Data DataRelations
+	resData, err := http.Get(URL + "/relation/" + strconv.Itoa(id))
+	if err != nil {
+		return Data, err
+	}
+
+	RelationData, err := ioutil.ReadAll(resData.Body)
+	if err != nil {
+		return Data, err
+	}
+
+	err = json.Unmarshal(RelationData, &Data)
+	if err != nil {
+		return Data, err
+	}
+
+	return Data, err
 }
