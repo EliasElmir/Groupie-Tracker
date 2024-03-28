@@ -65,9 +65,7 @@ func GetArtistData() (Artist, error) {
 	}
 
 	err = json.Unmarshal(ArtistData, &Data)
-	if err != nil {
-		return Data, err
-	}
+
 	for i, _ := range Data {
 		Data[i].ConcertDates = DateData.Dates[i].Dates
 		Data[i].Locations = LocationData.Location[i].Locations
@@ -136,4 +134,26 @@ func GetRelationsData() (RelationIndex, error) {
 	}
 
 	return Data, err
+}
+
+func GetDateByID(id int) DataDate {
+	var Data DataDate
+	resData, _ := http.Get(URL + "/dates/" + string(id))
+
+	RelationData, _ := ioutil.ReadAll(resData.Body)
+
+	_ = json.Unmarshal(RelationData, &Data)
+
+	return Data
+}
+
+func GetArtistByID(id int) DataArtist {
+	var Data DataArtist
+	resData, _ := http.Get(URL + "/artists/" + string(id))
+
+	RelationData, _ := ioutil.ReadAll(resData.Body)
+
+	_ = json.Unmarshal(RelationData, &Data)
+
+	return Data
 }
