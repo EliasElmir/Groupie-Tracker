@@ -149,85 +149,85 @@ func GetRelationsData() (RelationIndex, error) {
 	return Data, err
 }
 
-func GetDateByID(id int) (DataDate, error) {
+func GetDateByID(id int) DataDate {
 	var Data DataDate
 	resData, err := http.Get(URL + "/dates/" + strconv.Itoa(id))
 	if err != nil {
-		return Data, err
+		return Data
 	}
 
 	DateData, err := ioutil.ReadAll(resData.Body)
 	if err != nil {
-		return Data, err
+		return Data
 	}
 
 	err = json.Unmarshal(DateData, &Data)
 	if err != nil {
-		return Data, err
+		return Data
 	}
 
-	return Data, err
+	return Data
 }
 
-func GetArtistByID(id int) (DataArtist, error) {
+func GetArtistByID(id int) DataArtist {
 	var Data DataArtist
 	resData, err := http.Get(URL + "/artists/" + strconv.Itoa(id))
 	if err != nil {
-		return Data, err
+		return Data
 	}
 
 	ArtistData, err := ioutil.ReadAll(resData.Body)
 	if err != nil {
-		return Data, err
+		return Data
 	}
 
 	err = json.Unmarshal(ArtistData, &Data)
 	if err != nil {
-		return Data, err
+		return Data
 	}
 
-	return Data, err
+	return Data
 }
 
-func GetLocationByID(id int) (DataLocation, error) {
+func GetLocationByID(id int) DataLocation {
 	var Data DataLocation
 	resData, err := http.Get(URL + "/locations/" + strconv.Itoa(id))
 	if err != nil {
-		return Data, err
+		return Data
 	}
 
 	LocationData, err := ioutil.ReadAll(resData.Body)
 	if err != nil {
-		return Data, err
+		return Data
 	}
 
 	err = json.Unmarshal(LocationData, &Data)
 	if err != nil {
-		return Data, err
+		return Data
 	}
 
-	DatesData, err := GetDateByID(id)
+	DatesData := GetDateByID(id)
 	Data.Dates = DatesData.Dates
 
-	return Data, err
+	return Data
 }
 
-func GetRelationByID(id int) (DataRelations, error) {
+func GetRelationByID(id int) DataRelations {
 	var Data DataRelations
 	resData, err := http.Get(URL + "/relation/" + strconv.Itoa(id))
 	if err != nil {
-		return Data, err
+		return Data
 	}
 
 	RelationData, err := ioutil.ReadAll(resData.Body)
 	if err != nil {
-		return Data, err
+		return Data
 	}
 
 	err = json.Unmarshal(RelationData, &Data)
 	if err != nil {
-		return Data, err
+		return Data
 	}
 
-	return Data, err
+	return Data
 }
