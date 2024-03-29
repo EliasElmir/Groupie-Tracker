@@ -1,14 +1,12 @@
 package fyne
 
 import (
-	model "groupietracker/Structure"
-
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 )
 
 var (
-	myApp model.AppData
+	myApp AppData
 )
 
 func Begin() {

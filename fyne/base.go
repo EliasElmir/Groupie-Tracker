@@ -1,8 +1,8 @@
 package fyne
 
 import (
-	testmodel "groupietracker/INFOS/API"
-	model "groupietracker/Structure"
+	DataAPI "groupietracker/API"
+	testmodel "groupietracker/API"
 	"sort"
 	"time"
 
@@ -21,6 +21,11 @@ var (
 	filtre     int
 	filter     int
 )
+
+type AppData struct {
+	App    fyne.App
+	Window fyne.Window
+}
 
 func MainPage() {
 	myApp.Window.SetFullScreen(fullScreen)
@@ -55,9 +60,9 @@ func MainPage() {
 		}
 	case 2:
 		grid.RemoveAll()
-		artists := make([]*model.Artist, 52)
+		artists := make([]DataAPI.DataArtist, 52)
 		for i := 1; i <= 52; i++ {
-			artists[i-1] = testmodel.GetArtistsID(i)
+			artists[i-1] = testmodel.GetArtistByID(i)
 		}
 		sort.Slice(artists, func(i, j int) bool {
 			return artists[i].CreationDate < artists[j].CreationDate
@@ -67,9 +72,9 @@ func MainPage() {
 		}
 	case 3:
 		grid.RemoveAll()
-		artists := make([]*model.Artist, 52)
+		artists := make([]DataAPI.DataArtist, 52)
 		for i := 1; i <= 52; i++ {
-			artists[i-1] = testmodel.GetArtistsID(i)
+			artists[i-1] = testmodel.GetArtistByID(i)
 		}
 		sort.Slice(artists, func(i, j int) bool {
 			return artists[i].CreationDate > artists[j].CreationDate
@@ -79,9 +84,9 @@ func MainPage() {
 		}
 	case 4:
 		grid.RemoveAll()
-		artists := make([]*model.Artist, 52)
+		artists := make([]DataAPI.DataArtist, 52)
 		for i := 1; i <= 52; i++ {
-			artists[i-1] = testmodel.GetArtistsID(i)
+			artists[i-1] = testmodel.GetArtistByID(i)
 		}
 		sort.Slice(artists, func(i, j int) bool {
 			time1, _ := time.Parse("02-01-2006", artists[i].FirstAlbum)
@@ -93,9 +98,9 @@ func MainPage() {
 		}
 	case 5:
 		grid.RemoveAll()
-		artists := make([]*model.Artist, 52)
+		artists := make([]DataAPI.DataArtist, 52)
 		for i := 1; i <= 52; i++ {
-			artists[i-1] = testmodel.GetArtistsID(i)
+			artists[i-1] = testmodel.GetArtistByID(i)
 		}
 		sort.Slice(artists, func(i, j int) bool {
 			time1, _ := time.Parse("02-01-2006", artists[i].FirstAlbum)
@@ -116,7 +121,7 @@ func MainPage() {
 }
 
 func ButtonImg(id int) *fyne.Container {
-	r, _ := fyne.LoadResourceFromURLString(testmodel.GetArtistsID(id).Image)
+	r, _ := fyne.LoadResourceFromURLString(testmodel.GetArtistByID(id).Image)
 	img := canvas.NewImageFromResource(r)
 	img.SetMinSize(fyne.NewSize(300, 300))
 	btn := widget.NewButton(" ", func() {
@@ -125,7 +130,7 @@ func ButtonImg(id int) *fyne.Container {
 	container1 := container.New(
 		layout.NewMaxLayout(),
 		btn,
-		widget.NewCard(testmodel.GetArtistsID(id).Name, "", img),
+		widget.NewCard(testmodel.GetArtistByID(id).Name, "", img),
 	)
 	return container1
 }
