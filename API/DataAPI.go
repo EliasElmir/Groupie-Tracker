@@ -2,6 +2,7 @@ package DataAPI
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -20,6 +21,11 @@ type DatesIndex struct {
 
 type RelationIndex struct {
 	Relation []DataRelations `json:"index"`
+}
+
+type RelationSTRUCT struct {
+	Id             int64               `json "id"`
+	DatesLocations map[string][]string `json:"datesLocations"`
 }
 
 type DataArtist struct {
@@ -52,6 +58,11 @@ type DataDate struct {
 type DataRelations struct {
 	Id             int                 `json:"id"`
 	DatesLocations map[string][]string `json:"datesLocations"`
+}
+
+type Locations struct {
+	Id       int64    `json:"id"`
+	Location []string `json:"locations"`
 }
 
 func GetArtistData(isAllDataNeeded bool) (Artist, error) {
@@ -230,4 +241,50 @@ func GetRelationByID(id int) DataRelations {
 	}
 
 	return Data
+}
+
+func Location(id int) *Locations {
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", "https://groupietrackers.herokuapp.com/api/locations"+"/"+strconv.Itoa(id), nil)
+	if err != nil {
+		fmt.Print(err.Error())
+	}
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Print(err.Error())
+	}
+	defer resp.Body.Close()
+	bodyBytes, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Print(err.Error())
+	}
+	var responseObject Locations
+	json.Unmarshal(bodyBytes, &responseObject)
+	fmt.Println(responseObject.Location)
+	return &responseObject
+}
+
+func Relation(id int) RelationSTRUCT {
+	var relations RelationSTRUCT
+
+	err := get("https://groupietrackers.herokuapp.com/api/relation/"+strconv.Itoa(id), &relations)
+	if err != nil {
+		return relations
+	}
+	return relations
+}
+
+func get(url string, target interface{}) error {
+	r, err := http.Get(url)
+	if err != nil {
+		return err
+	}
+	defer r.Body.Close()
+	err = json.NewDecoder(r.Body).Decode(target)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

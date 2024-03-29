@@ -1,6 +1,7 @@
 package fyne
 
 import (
+	"fmt"
 	DataAPI "groupietracker/API"
 	"image/color"
 	"strconv"
@@ -10,13 +11,13 @@ import (
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 var (
-	containerVertical1 = container.NewVBox()
-	containerVertical2 = container.NewVBox()
-	DRLINFO            = container.NewGridWithColumns(2)
-	buttonstatus       = 0
+	DRLINFO      = container.NewGridWithColumns(2)
+	buttonstatus = 0
 )
 
 func HomePage() *fyne.Container {
@@ -34,28 +35,130 @@ func SecondPage(id int) {
 	r, _ := fyne.LoadResourceFromURLString(DataAPI.GetArtistByID(id).Image)
 	img := canvas.NewImageFromResource(r)
 	img.FillMode = canvas.ImageFillOriginal
-	img.Resize((fyne.NewSize(200, 200)))
+	txt := canvas.NewText("=======================", color.Transparent)
+	img.Resize((fyne.NewSize(400, 400)))
+	image := container.NewHBox(txt, img)
+
 	GroupeInfo := InfoGroupe(id)
 	locationButton := LocationButton(id)
-	txt := canvas.NewText("==================================", color.Transparent)
-	//dateButton := DRL.DateButton(id)
-	//relationButton := DRL.RelationButton(id)
-	homeButton := HomePage()
-	containerVertical1 = container.NewVBox(searchEntry, img, locationButton, homeButton)
-	containerVertical2 = container.NewVBox(GroupeInfo, DRLINFO)
-	containerH1 := container.NewHBox(containerVertical1, txt, containerVertical2)
-	containerH1.Refresh()
 
-	//centeredContainer := container.NewCenter(containerH1)
-	myApp.Window.SetContent(containerH1)
+	homeButton := HomePage()
+	content := container.NewVBox(image, txt, txt, txt, txt, txt, txt, txt, txt, txt, GroupeInfo, DRLINFO, homeButton, locationButton)
+	content.Refresh()
+
+	centeredContainer := container.NewCenter(content)
+	myApp.Window.SetContent(centeredContainer)
+
 }
 
 func LocationButton(id int) *fyne.Container {
 	Concert := widget.NewButton("Concert", func() {
-		infoDate(id)
+		fmt.Print("location")
+		Location(id)
 	})
 	contain := container.NewVBox(Concert)
 	return contain
+}
+
+func Location(id int) {
+	DRLINFO.RemoveAll()
+	fmt.Print(buttonstatus)
+	if buttonstatus == 0 {
+		var loca string
+		var list string
+		fr := 0
+		for _, place := range DataAPI.Location(id).Location {
+			locationl := strings.Split(place, "_")
+			locationli := strings.Join(locationl, " ")
+			loca = cases.Title(language.Und).String(locationli)
+			fr = fr + 1
+			if fr == len(DataAPI.Location(id).Location) {
+				list = list + loca
+			} else {
+				list = list + loca + ","
+			}
+		}
+		var testLoca []string = strings.Split(list, ",")
+		for _, varloca := range testLoca {
+			place := varloca
+			contain := widget.NewButton(place,
+				func() {
+					fmt.Print(place)
+					DateLocation(id, place)
+				},
+			)
+			DRLINFO.Add(contain)
+		}
+		buttonstatus = 1
+	} else {
+		DRLINFO.RemoveAll()
+		buttonstatus = 0
+	}
+}
+
+func DateLocation(id int, locate string) {
+	DRLINFO.RemoveAll()
+	text := "En concert à " + locate + " : "
+	contain := canvas.NewText(text, color.White)
+	contain.TextSize = 24
+	DRLINFO.Add(contain)
+	contain = canvas.NewText(" ", color.White)
+	contain.TextSize = 24
+	DRLINFO.Add(contain)
+	varloca := strings.Split(locate, " ")
+	locat := strings.Join(varloca, "_")
+	ocat := strings.ToLower(locat)
+	for location, dates := range DataAPI.Relation(id).DatesLocations {
+		if ocat == location {
+			for _, temp := range dates {
+				datetemp := Date(temp)
+				datetemp = " -" + datetemp
+				contain := canvas.NewText(datetemp, color.White)
+				contain.TextSize = 24
+				contain.Alignment = fyne.TextAlignLeading
+				DRLINFO.Add(contain)
+			}
+		}
+	}
+	btn := widget.NewButton("Retour", func() {
+		buttonstatus = 0
+		Location(id)
+	})
+	DRLINFO.Add(btn)
+}
+
+func Date(date string) string {
+	var mois string
+	dstring := strings.Split(date, "-")
+	switch dstring[1] {
+	case "01":
+		mois = "janvier"
+	case "02":
+		mois = "février"
+	case "03":
+		mois = "mars"
+	case "04":
+		mois = "avril"
+	case "05":
+		mois = "mai"
+	case "06":
+		mois = "juin"
+	case "07":
+		mois = "juillet"
+	case "08":
+		mois = "août"
+	case "09":
+		mois = "septembre"
+	case "10":
+		mois = "octobre"
+	case "11":
+		mois = "novembre"
+	case "12":
+		mois = "décembre"
+	}
+	dstring[1] = mois
+	ds := strings.Join(dstring, " ")
+	return ds
 }
 
 func InfoGroupe(id int) *fyne.Container {
@@ -108,79 +211,4 @@ func InfoGroupe(id int) *fyne.Container {
 	firstAlbum.Alignment = fyne.TextAlignLeading
 	infog.Add(firstAlbum)
 	return infog
-}
-
-func infoDate(id int) {
-	var v int
-	if buttonstatus == 0 {
-		var container = container.NewGridWithColumns(1)
-		var listDate string
-		i := 0
-		for _, idate := range DataAPI.GetDateByID(id).Dates {
-			idate = Date(idate)
-			i = i + 1
-			if i == len(DataAPI.GetDateByID(id).Dates) {
-				listDate = listDate + idate
-			} else if i == 5 {
-				listDate = listDate + idate + " - " + "\n"
-			} else if i == 10 {
-				listDate = listDate + idate + " - " + "\n"
-			} else if i == 15 {
-				listDate = listDate + idate + " - " + "\n"
-			} else {
-				listDate = listDate + idate + " - "
-			}
-		}
-		var testDate []string = strings.Split(listDate, "*")
-		v = 0
-		for _, AllDate := range testDate {
-			if v != 0 {
-				DateAll := AllDate
-				contain := widget.NewButton(DateAll,
-					func() {
-					},
-				)
-				container.Add(contain)
-			} else {
-				v = 1
-			}
-			DRLINFO.RemoveAll()
-			DRLINFO.Add(container)
-		}
-		buttonstatus = 1
-	}
-}
-
-func Date(date string) string {
-	mois := ""
-	dstring := strings.Split(date, "-")
-	switch dstring[1] {
-	case "01":
-		mois = "janvier"
-	case "02":
-		mois = "février"
-	case "03":
-		mois = "mars"
-	case "04":
-		mois = "avril"
-	case "05":
-		mois = "mai"
-	case "06":
-		mois = "juin"
-	case "07":
-		mois = "juillet"
-	case "08":
-		mois = "août"
-	case "09":
-		mois = "septembre"
-	case "10":
-		mois = "octobre"
-	case "11":
-		mois = "novembre"
-	case "12":
-		mois = "décembre"
-	}
-	dstring[1] = mois
-	ds := strings.Join(dstring, " ")
-	return ds
 }
