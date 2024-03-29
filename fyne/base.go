@@ -2,7 +2,6 @@ package fyne
 
 import (
 	DataAPI "groupietracker/API"
-	testmodel "groupietracker/API"
 	"sort"
 	"time"
 
@@ -58,55 +57,34 @@ func MainPage() {
 		for id := 1; id < 53; id++ {
 			grid.Add(ButtonImg(id))
 		}
-	case 2:
+	case 2, 3, 4, 5:
 		grid.RemoveAll()
 		artists := make([]DataAPI.DataArtist, 52)
 		for i := 1; i <= 52; i++ {
-			artists[i-1] = testmodel.GetArtistByID(i)
+			artists[i-1] = DataAPI.GetArtistByID(i)
 		}
-		sort.Slice(artists, func(i, j int) bool {
-			return artists[i].CreationDate < artists[j].CreationDate
-		})
-		for _, artist := range artists {
-			grid.Add(ButtonImg(int(artist.Id)))
+		switch filter {
+		case 2:
+			sort.Slice(artists, func(i, j int) bool {
+				return artists[i].CreationDate < artists[j].CreationDate
+			})
+		case 3:
+			sort.Slice(artists, func(i, j int) bool {
+				return artists[i].CreationDate > artists[j].CreationDate
+			})
+		case 4:
+			sort.Slice(artists, func(i, j int) bool {
+				time1, _ := time.Parse("02-01-2006", artists[i].FirstAlbum)
+				time2, _ := time.Parse("02-01-2006", artists[j].FirstAlbum)
+				return time1.Year() < time2.Year()
+			})
+		case 5:
+			sort.Slice(artists, func(i, j int) bool {
+				time1, _ := time.Parse("02-01-2006", artists[i].FirstAlbum)
+				time2, _ := time.Parse("02-01-2006", artists[j].FirstAlbum)
+				return time1.Year() > time2.Year()
+			})
 		}
-	case 3:
-		grid.RemoveAll()
-		artists := make([]DataAPI.DataArtist, 52)
-		for i := 1; i <= 52; i++ {
-			artists[i-1] = testmodel.GetArtistByID(i)
-		}
-		sort.Slice(artists, func(i, j int) bool {
-			return artists[i].CreationDate > artists[j].CreationDate
-		})
-		for _, artist := range artists {
-			grid.Add(ButtonImg(int(artist.Id)))
-		}
-	case 4:
-		grid.RemoveAll()
-		artists := make([]DataAPI.DataArtist, 52)
-		for i := 1; i <= 52; i++ {
-			artists[i-1] = testmodel.GetArtistByID(i)
-		}
-		sort.Slice(artists, func(i, j int) bool {
-			time1, _ := time.Parse("02-01-2006", artists[i].FirstAlbum)
-			time2, _ := time.Parse("02-01-2006", artists[j].FirstAlbum)
-			return time1.Year() < time2.Year()
-		})
-		for _, artist := range artists {
-			grid.Add(ButtonImg(int(artist.Id)))
-		}
-	case 5:
-		grid.RemoveAll()
-		artists := make([]DataAPI.DataArtist, 52)
-		for i := 1; i <= 52; i++ {
-			artists[i-1] = testmodel.GetArtistByID(i)
-		}
-		sort.Slice(artists, func(i, j int) bool {
-			time1, _ := time.Parse("02-01-2006", artists[i].FirstAlbum)
-			time2, _ := time.Parse("02-01-2006", artists[j].FirstAlbum)
-			return time1.Year() > time2.Year()
-		})
 		for _, artist := range artists {
 			grid.Add(ButtonImg(int(artist.Id)))
 		}
@@ -117,11 +95,10 @@ func MainPage() {
 	grid2.Refresh()
 	full := container.NewBorder(toolBar, nil, nil, nil, grid2)
 	myApp.Window.SetContent(full)
-
 }
 
 func ButtonImg(id int) *fyne.Container {
-	r, _ := fyne.LoadResourceFromURLString(testmodel.GetArtistByID(id).Image)
+	r, _ := fyne.LoadResourceFromURLString(DataAPI.GetArtistByID(id).Image)
 	img := canvas.NewImageFromResource(r)
 	img.SetMinSize(fyne.NewSize(300, 300))
 	btn := widget.NewButton(" ", func() {
@@ -130,19 +107,14 @@ func ButtonImg(id int) *fyne.Container {
 	container1 := container.New(
 		layout.NewMaxLayout(),
 		btn,
-		widget.NewCard(testmodel.GetArtistByID(id).Name, "", img),
+		widget.NewCard(DataAPI.GetArtistByID(id).Name, "", img),
 	)
 	return container1
 }
 
 func FullScreen(window fyne.Window, verifZoombool bool) {
-	if verifZoombool {
-		fullScreen = false
-		window.SetFullScreen(fullScreen)
-	} else {
-		fullScreen = true
-		window.SetFullScreen(fullScreen)
-	}
+	fullScreen = !verifZoombool
+	window.SetFullScreen(fullScreen)
 }
 
 func Filter() *widget.RadioGroup {
