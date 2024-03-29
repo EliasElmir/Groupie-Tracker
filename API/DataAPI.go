@@ -3,7 +3,7 @@ package DataAPI
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strconv"
 )
@@ -73,7 +73,7 @@ func GetArtistData(isAllDataNeeded bool) (Artist, error) {
 		return Data, err
 	}
 
-	ArtistData, err := ioutil.ReadAll(resArtist.Body)
+	ArtistData, err := io.ReadAll(resArtist.Body)
 	if err != nil {
 		return Data, err
 	}
@@ -109,7 +109,7 @@ func GetLocationData() (LocationIndex, error) {
 		return Data, err
 	}
 
-	DateData, err := ioutil.ReadAll(resData.Body)
+	DateData, err := io.ReadAll(resData.Body)
 	if err != nil {
 		return Data, err
 	}
@@ -128,7 +128,7 @@ func GetDateData() (DatesIndex, error) {
 		return Data, err
 	}
 
-	DateData, err := ioutil.ReadAll(resData.Body)
+	DateData, err := io.ReadAll(resData.Body)
 	if err != nil {
 		return Data, err
 	}
@@ -147,7 +147,7 @@ func GetRelationsData() (RelationIndex, error) {
 		return Data, err
 	}
 
-	RelationData, err := ioutil.ReadAll(resData.Body)
+	RelationData, err := io.ReadAll(resData.Body)
 	if err != nil {
 		return Data, err
 	}
@@ -167,7 +167,7 @@ func GetDateByID(id int) DataDate {
 		return Data
 	}
 
-	DateData, err := ioutil.ReadAll(resData.Body)
+	DateData, err := io.ReadAll(resData.Body)
 	if err != nil {
 		return Data
 	}
@@ -187,7 +187,7 @@ func GetArtistByID(id int) DataArtist {
 		return Data
 	}
 
-	ArtistData, err := ioutil.ReadAll(resData.Body)
+	ArtistData, err := io.ReadAll(resData.Body)
 	if err != nil {
 		return Data
 	}
@@ -207,7 +207,7 @@ func GetLocationByID(id int) DataLocation {
 		return Data
 	}
 
-	LocationData, err := ioutil.ReadAll(resData.Body)
+	LocationData, err := io.ReadAll(resData.Body)
 	if err != nil {
 		return Data
 	}
@@ -230,7 +230,7 @@ func GetRelationByID(id int) DataRelations {
 		return Data
 	}
 
-	RelationData, err := ioutil.ReadAll(resData.Body)
+	RelationData, err := io.ReadAll(resData.Body)
 	if err != nil {
 		return Data
 	}
@@ -254,7 +254,7 @@ func Location(id int) *Locations {
 		fmt.Print(err.Error())
 	}
 	defer resp.Body.Close()
-	bodyBytes, err := ioutil.ReadAll(resp.Body)
+	bodyBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
 		fmt.Print(err.Error())
 	}
