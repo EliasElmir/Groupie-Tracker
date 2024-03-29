@@ -15,11 +15,8 @@ import (
 var (
 	containerVertical1 = container.NewVBox()
 	containerVertical2 = container.NewVBox()
-)
-
-var (
-	buttonstatus = 0
-	DRLINFO      = container.NewGridWithColumns(2)
+	DRLINFO            = container.NewGridWithColumns(2)
+	buttonstatus       = 0
 )
 
 func HomePage() *fyne.Container {
@@ -55,7 +52,7 @@ func SecondPage(id int) {
 
 func LocationButton(id int) *fyne.Container {
 	Concert := widget.NewButton("Concert", func() {
-		DataAPI.GetLocationByID(id)
+		infoDate(id)
 	})
 	contain := container.NewVBox(Concert)
 	return contain
@@ -111,6 +108,47 @@ func InfoGroupe(id int) *fyne.Container {
 	firstAlbum.Alignment = fyne.TextAlignLeading
 	infog.Add(firstAlbum)
 	return infog
+}
+
+func infoDate(id int) {
+	var v int
+	if buttonstatus == 0 {
+		var container = container.NewGridWithColumns(1)
+		var listDate string
+		i := 0
+		for _, idate := range DataAPI.GetDateByID(id).Dates {
+			idate = Date(idate)
+			i = i + 1
+			if i == len(DataAPI.GetDateByID(id).Dates) {
+				listDate = listDate + idate
+			} else if i == 5 {
+				listDate = listDate + idate + " - " + "\n"
+			} else if i == 10 {
+				listDate = listDate + idate + " - " + "\n"
+			} else if i == 15 {
+				listDate = listDate + idate + " - " + "\n"
+			} else {
+				listDate = listDate + idate + " - "
+			}
+		}
+		var testDate []string = strings.Split(listDate, "*")
+		v = 0
+		for _, AllDate := range testDate {
+			if v != 0 {
+				DateAll := AllDate
+				contain := widget.NewButton(DateAll,
+					func() {
+					},
+				)
+				container.Add(contain)
+			} else {
+				v = 1
+			}
+			DRLINFO.RemoveAll()
+			DRLINFO.Add(container)
+		}
+		buttonstatus = 1
+	}
 }
 
 func Date(date string) string {
