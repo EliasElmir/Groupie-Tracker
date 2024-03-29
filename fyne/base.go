@@ -2,6 +2,7 @@ package fyne
 
 import (
 	DataAPI "groupietracker/API"
+	"image/color"
 	"sort"
 	"time"
 
@@ -28,6 +29,9 @@ type AppData struct {
 
 func MainPage() {
 	myApp.Window.SetFullScreen(fullScreen)
+
+	background := canvas.NewRectangle(color.White)
+
 	if a == 0 {
 		filtre = 1
 		a = 2
@@ -94,7 +98,10 @@ func MainPage() {
 	grid2 := container.NewVScroll(grid)
 	grid2.Refresh()
 	full := container.NewBorder(toolBar, nil, nil, nil, grid2)
-	myApp.Window.SetContent(full)
+	backgroundContainer := container.New(
+		layout.NewBorderLayout(nil, nil, nil, nil), background, full)
+
+	myApp.Window.SetContent(backgroundContainer)
 }
 
 func ButtonImg(id int) *fyne.Container {
