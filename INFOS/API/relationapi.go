@@ -1,7 +1,7 @@
-package testmodel
+package API
 
 import (
-	"groupietracker/model"
+	model "groupietracker/Structure"
 	"strconv"
 )
 

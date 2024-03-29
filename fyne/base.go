@@ -1,8 +1,8 @@
-package view
+package fyne
 
 import (
-	testmodel "groupietracker/controller/modelController"
-	"groupietracker/model"
+	testmodel "groupietracker/INFOS/API"
+	model "groupietracker/Structure"
 	"sort"
 	"time"
 
@@ -15,7 +15,7 @@ import (
 )
 
 var (
-	b          int  = 0
+	a          int  = 0
 	grid            = container.New(layout.NewGridLayoutWithColumns(5))
 	fullScreen bool = false
 	filtre     int
@@ -24,9 +24,9 @@ var (
 
 func MainPage() {
 	myApp.Window.SetFullScreen(fullScreen)
-	if b == 0 {
+	if a == 0 {
 		filtre = 1
-		b = 2
+		a = 2
 	}
 	filter = filtre
 	toolBar := widget.NewToolbar(
@@ -106,10 +106,13 @@ func MainPage() {
 			grid.Add(ButtonImg(int(artist.Id)))
 		}
 	}
+	searchEntry := widget.NewEntry()
+	searchEntry.SetPlaceHolder("Rechercher un artiste...")
 	grid2 := container.NewVScroll(grid)
 	grid2.Refresh()
 	full := container.NewBorder(toolBar, nil, nil, nil, grid2)
 	myApp.Window.SetContent(full)
+
 }
 
 func ButtonImg(id int) *fyne.Container {

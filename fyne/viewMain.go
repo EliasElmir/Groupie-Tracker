@@ -1,7 +1,7 @@
-package view
+package fyne
 
 import (
-	"groupietracker/model"
+	model "groupietracker/Structure"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"

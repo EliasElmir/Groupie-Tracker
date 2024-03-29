@@ -1,7 +1,7 @@
-package infoDRL // DRL = Date Relation Location
+package infosgroupe
 
 import (
-	testmodel "groupietracker/controller/modelController"
+	testmodel "groupietracker/INFOS/API"
 	"image/color"
 	"strings"
 

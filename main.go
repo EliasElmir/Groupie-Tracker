@@ -1,7 +1,7 @@
 package main
 
-import "groupietracker/view"
+import "groupietracker/fyne"
 
 func main() {
-	view.Begin()
+	fyne.Begin()
 }

@@ -1,8 +1,8 @@
-package testmodel
+package API
 
 import (
 	"encoding/json"
-	"groupietracker/model"
+	model "groupietracker/Structure"
 	"net/http"
 	"strconv"
 )

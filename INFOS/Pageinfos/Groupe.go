@@ -1,8 +1,8 @@
 package infoPage
 
 import (
-	DRL "groupietracker/controller/infoDRL"
-	testmodel "groupietracker/controller/modelController"
+	testmodel "groupietracker/INFOS/API"
+	DRL "groupietracker/INFOS/infosgroupe"
 	"image/color"
 	"strconv"
 

@@ -1,9 +1,9 @@
-package testmodel
+package API
 
 import (
 	"encoding/json"
 	"fmt"
-	"groupietracker/model"
+	model "groupietracker/Structure"
 	"io/ioutil"
 	"net/http"
 	"strconv"
