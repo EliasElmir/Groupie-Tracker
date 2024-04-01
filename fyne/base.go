@@ -16,7 +16,7 @@ import (
 
 var (
 	a          int  = 0
-	grid            = container.New(layout.NewGridLayoutWithColumns(5))
+	grid            = container.NewGridWithColumns(5)
 	fullScreen bool = false
 	filtre     int
 	filter     int
@@ -97,11 +97,21 @@ func MainPage() {
 	searchEntry.SetPlaceHolder("Rechercher un artiste...")
 	grid2 := container.NewVScroll(grid)
 	grid2.Refresh()
-	full := container.NewBorder(toolBar, nil, nil, nil, grid2)
-	backgroundContainer := container.New(
-		layout.NewBorderLayout(nil, nil, nil, nil), background, full)
+	gridContent := container.NewMax()
+	gridContent.Add(grid2)
 
+	full := container.NewBorder(toolBar, nil, nil, nil, gridContent)
+	backgroundContainer := container.NewBorder(searchEntry, nil, nil, nil, background, full)
 	myApp.Window.SetContent(backgroundContainer)
+
+	searchEntry.OnChanged = func(text string) {
+		filteredArtists, _ := DataAPI.Search(text)
+		grid.RemoveAll()
+		for _, artist := range filteredArtists {
+			grid.Add(ButtonImg(artist.Id))
+		}
+		grid.Refresh()
+	}
 }
 
 func ButtonImg(id int) *fyne.Container {
