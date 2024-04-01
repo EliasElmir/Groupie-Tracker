@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 const URL = "https://groupietrackers.herokuapp.com/api"
@@ -287,4 +288,21 @@ func get(url string, target interface{}) error {
 	}
 
 	return nil
+}
+
+func Search(query string) ([]DataArtist, error) {
+	allArtists, err := GetArtistData(true)
+	if err != nil {
+		return nil, err
+	}
+
+	var searchResults []DataArtist
+
+	for _, artist := range allArtists {
+		if strings.Contains(strings.ToLower(artist.Name), strings.ToLower(query)) {
+			searchResults = append(searchResults, artist)
+		}
+	}
+
+	return searchResults, nil
 }
