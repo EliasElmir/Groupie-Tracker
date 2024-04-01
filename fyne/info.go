@@ -10,6 +10,7 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
@@ -35,20 +36,38 @@ func SecondPage(id int) {
 	r, _ := fyne.LoadResourceFromURLString(DataAPI.GetArtistByID(id).Image)
 	img := canvas.NewImageFromResource(r)
 	img.FillMode = canvas.ImageFillOriginal
-	txt := canvas.NewText("=======================", color.Transparent)
+	txt := canvas.NewText("========================================================================================================", color.Transparent)
 	img.Resize((fyne.NewSize(400, 400)))
-	image := container.NewHBox(txt, img)
 
 	GroupeInfo := InfoGroupe(id)
 	locationButton := LocationButton(id)
 
 	homeButton := HomePage()
-	content := container.NewVBox(image, txt, txt, txt, txt, txt, txt, txt, txt, txt, GroupeInfo, DRLINFO, homeButton, locationButton)
-	content.Refresh()
 
-	centeredContainer := container.NewCenter(content)
-	myApp.Window.SetContent(centeredContainer)
+	previousbutton := widget.NewButton("previous", func() {
+		if id != 1 {
+			SecondPage(id - 1)
+		}
+	})
 
+	nextButton := widget.NewButton("next", func() {
+		if id != 52{
+			SecondPage(id + 1)
+		}
+	})
+
+	nxtAndpreButtons := container.NewHBox(previousbutton, layout.NewSpacer(), nextButton)
+	image := container.NewHBox(txt, img)
+
+	content := container.NewVBox(txt, txt, txt, txt, image, txt, txt, txt, txt, txt, txt, txt, txt, txt, GroupeInfo, DRLINFO)
+
+	content2 := container.NewVBox(homeButton, locationButton)
+	centeredContainer2 := container.NewCenter(content2)
+
+	finalcontent := container.NewVBox(content, nxtAndpreButtons, centeredContainer2)
+	finalcontent.Refresh()
+
+	myApp.Window.SetContent(finalcontent)
 }
 
 func LocationButton(id int) *fyne.Container {
@@ -170,7 +189,7 @@ func InfoGroupe(id int) *fyne.Container {
 	name := "Nom du groupe : " + DataAPI.GetArtistByID(id).Name
 	nameText := canvas.NewText(name, color.White)
 	nameText.TextSize = 24
-	nameText.Alignment = fyne.TextAlignLeading
+	nameText.Alignment = fyne.TextAlignCenter
 	infog.Add(nameText)
 	members := DataAPI.GetArtistByID(id).Members
 	y := len(members)
@@ -191,24 +210,24 @@ func InfoGroupe(id int) *fyne.Container {
 	stringmembers := "Membres du groupe : " + listmember
 	members1 := canvas.NewText(stringmembers, color.White)
 	members1.TextSize = 24
-	members1.Alignment = fyne.TextAlignLeading
+	members1.Alignment = fyne.TextAlignCenter
 	infog.Add(members1)
 	if v == 1 {
 		stringmember2 := listmember2
 		members2 := canvas.NewText(stringmember2, color.White)
 		members2.TextSize = 24
-		members2.Alignment = fyne.TextAlignLeading
+		members2.Alignment = fyne.TextAlignCenter
 		infog.Add(members2)
 	}
 	creationdate := "Date de creation du groupe : " + strconv.Itoa(DataAPI.GetArtistByID(id).CreationDate)
 	creationDate := canvas.NewText(creationdate, color.White)
 	creationDate.TextSize = 24
-	creationDate.Alignment = fyne.TextAlignLeading
+	creationDate.Alignment = fyne.TextAlignCenter
 	infog.Add(creationDate)
 	FirstAlbum := "Date de sortie premier album : " + Date(DataAPI.GetArtistByID(id).FirstAlbum)
 	firstAlbum := canvas.NewText(FirstAlbum, color.White)
 	firstAlbum.TextSize = 24
-	firstAlbum.Alignment = fyne.TextAlignLeading
+	firstAlbum.Alignment = fyne.TextAlignCenter
 	infog.Add(firstAlbum)
 	return infog
 }
