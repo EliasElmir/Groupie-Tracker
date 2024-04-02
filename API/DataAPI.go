@@ -245,22 +245,20 @@ func GetRelationByID(id int) DataRelations {
 }
 
 func Location(id int) *Locations {
-	client := &http.Client{}
-	req, err := http.NewRequest("GET", "https://groupietrackers.herokuapp.com/api/locations"+"/"+strconv.Itoa(id), nil)
+	url := fmt.Sprintf("https://groupietrackers.herokuapp.com/api/locations/%d", id)
+	resp, err := http.Get(url)
 	if err != nil {
-		fmt.Print(err.Error())
-	}
-	resp, err := client.Do(req)
-	if err != nil {
-		fmt.Print(err.Error())
+		fmt.Println("Erreur lors de la requête HTTP:", err)
+		return nil
 	}
 	defer resp.Body.Close()
-	bodyBytes, err := io.ReadAll(resp.Body)
-	if err != nil {
-		fmt.Print(err.Error())
-	}
+
 	var responseObject Locations
-	json.Unmarshal(bodyBytes, &responseObject)
+	if err := json.NewDecoder(resp.Body).Decode(&responseObject); err != nil {
+		fmt.Println("Erreur lors du décodage de la réponse JSON:", err)
+		return nil
+	}
+
 	fmt.Println(responseObject.Location)
 	return &responseObject
 }
