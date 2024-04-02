@@ -10,6 +10,7 @@ var (
 )
 
 func Begin() {
+	// Initializes the Fyne application, creates a new window, starts the home page, sets the window size, and displays the window.
 	myApp.App = app.New()
 	myApp.Window = myApp.App.NewWindow("Groupie Tracker.")
 	// MainPage()
