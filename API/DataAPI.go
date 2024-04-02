@@ -67,6 +67,7 @@ type Locations struct {
 }
 
 func GetArtistData(isAllDataNeeded bool) (Artist, error) {
+	// GetArtistData get every artist information from the api, with a bool to know if it needs to get locations "concertdates" and relations as well
 	var Data Artist
 
 	resArtist, err := http.Get(URL + "/artists")
@@ -104,6 +105,7 @@ func GetArtistData(isAllDataNeeded bool) (Artist, error) {
 }
 
 func GetLocationData() (LocationIndex, error) {
+	// GetLocationData get the location of concert of every artist of the api
 	var Data LocationIndex
 	resData, err := http.Get(URL + "/locations")
 	if err != nil {
@@ -123,6 +125,7 @@ func GetLocationData() (LocationIndex, error) {
 }
 
 func GetDateData() (DatesIndex, error) {
+	// GetDateData get the date of every artist of the api
 	var Data DatesIndex
 	resData, err := http.Get(URL + "/dates")
 	if err != nil {
@@ -142,6 +145,7 @@ func GetDateData() (DatesIndex, error) {
 }
 
 func GetRelationsData() (RelationIndex, error) {
+	// GetRelationsData get the relation of every artist of the api
 	var Data RelationIndex
 	resData, err := http.Get(URL + "/relation")
 	if err != nil {
@@ -162,6 +166,7 @@ func GetRelationsData() (RelationIndex, error) {
 }
 
 func GetDateByID(id int) DataDate {
+	// GetDateByID get the date of a specific artist
 	var Data DataDate
 	resData, err := http.Get(URL + "/dates/" + strconv.Itoa(id))
 	if err != nil {
@@ -182,6 +187,7 @@ func GetDateByID(id int) DataDate {
 }
 
 func GetArtistByID(id int) DataArtist {
+	// GetArtistByID get the information of a specific artist with the id
 	var Data DataArtist
 	resData, err := http.Get(URL + "/artists/" + strconv.Itoa(id))
 	if err != nil {
@@ -202,6 +208,7 @@ func GetArtistByID(id int) DataArtist {
 }
 
 func GetLocationByID(id int) DataLocation {
+	// GetLocationByID get the location of a specific artist with the id
 	var Data DataLocation
 	resData, err := http.Get(URL + "/locations/" + strconv.Itoa(id))
 	if err != nil {
@@ -225,6 +232,7 @@ func GetLocationByID(id int) DataLocation {
 }
 
 func GetRelationByID(id int) DataRelations {
+	// GetRelationByID get the relation of a specific artist with the id
 	var Data DataRelations
 	resData, err := http.Get(URL + "/relation/" + strconv.Itoa(id))
 	if err != nil {
@@ -245,6 +253,7 @@ func GetRelationByID(id int) DataRelations {
 }
 
 func Location(id int) *Locations {
+	// Location get the location of a specific artist with the id
 	url := fmt.Sprintf("https://groupietrackers.herokuapp.com/api/locations/%d", id)
 	resp, err := http.Get(url)
 	if err != nil {
@@ -264,6 +273,7 @@ func Location(id int) *Locations {
 }
 
 func Relation(id int) RelationSTRUCT {
+	// Relation get the relation of a specific artist with the id
 	var relations RelationSTRUCT
 
 	err := get("https://groupietrackers.herokuapp.com/api/relation/"+strconv.Itoa(id), &relations)
@@ -274,6 +284,7 @@ func Relation(id int) RelationSTRUCT {
 }
 
 func get(url string, target interface{}) error {
+	// get get the data from the url and put it in the target
 	r, err := http.Get(url)
 	if err != nil {
 		return err
@@ -289,6 +300,7 @@ func get(url string, target interface{}) error {
 }
 
 func Search(query string) ([]DataArtist, error) {
+	// Search get the artist that match the query
 	allArtists, err := GetArtistData(true)
 	if err != nil {
 		return nil, err
