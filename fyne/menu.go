@@ -8,14 +8,14 @@ import (
 )
 
 func home() {
-	// Creates a new window with the title "Groupie Tracker."
-	// Creates a button "Enter in Groupie Tracker" which, when clicked, calls the MainPage() function.
+	// Creates a new window with the title "FestivaSync"
+	// Creates a button "Enter in FestivaSync" which, when clicked, calls the MainPage() function.
 	// Loads an image from a URL and places it in a canvas.Image.
 	// Creates a vertical container for the image and the button.
 	// Centers the vertical content in a container.
 	// Sets the window content to be the centered content.
-	myApp.Window = myApp.App.NewWindow("Groupie Tracker.")
-	testButton := widget.NewButton("Enter in Groupie Tracker", func() {
+	myApp.Window = myApp.App.NewWindow("FestivaSync")
+	testButton := widget.NewButton("Enter in FestivaSync", func() {
 		MainPage()
 	})
 	imageURL := "https://img.freepik.com/vecteurs-libre/illustration-vectorielle-micro-haut-parleurs-noirs-logo-promotionnel-vintage-pour-concert-festival-musique_74855-10591.jpg"
