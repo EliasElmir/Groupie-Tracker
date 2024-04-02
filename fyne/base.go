@@ -1,7 +1,7 @@
 package fyne
 
 import (
-	DataAPI "groupietracker/API"
+	DataAPI "groupietracker/API" // Import the DataAPI package from the groupietracker/API directory
 	"image/color"
 	"sort"
 	"time"
@@ -28,6 +28,7 @@ type AppData struct {
 }
 
 func MainPage() {
+	// Generates the main page of the application with a toolbar, an artists grid, and a search field.
 	myApp.Window.SetFullScreen(fullScreen)
 
 	background := canvas.NewRectangle(color.White)
@@ -65,7 +66,7 @@ func MainPage() {
 	}
 
 	searchEntry := widget.NewEntry()
-	searchEntry.SetPlaceHolder("Rechercher un artiste...")
+	searchEntry.SetPlaceHolder("Search for an artist...")
 
 	grid2 := container.NewVScroll(grid)
 	gridContent := container.NewMax(grid2)
@@ -80,6 +81,7 @@ func MainPage() {
 }
 
 func loadArtistsIntoGrid(start, end int) {
+	// Loads artists into the grid.
 	grid.RemoveAll()
 	for id := start; id < end; id++ {
 		grid.Add(ButtonImg(id))
@@ -87,6 +89,7 @@ func loadArtistsIntoGrid(start, end int) {
 }
 
 func loadArtistsByFilter(filter int) {
+	// Loads artists into the grid based on a specific filter.
 	grid.RemoveAll()
 	artists := make([]DataAPI.DataArtist, 52)
 	for i := 1; i <= 52; i++ {
@@ -120,6 +123,7 @@ func loadArtistsByFilter(filter int) {
 }
 
 func filterArtistsByText(text string) {
+	// Filters artists based on a search text.
 	filteredArtists, _ := DataAPI.Search(text)
 	grid.RemoveAll()
 	for _, artist := range filteredArtists {
@@ -129,6 +133,7 @@ func filterArtistsByText(text string) {
 }
 
 func ButtonImg(id int) *fyne.Container {
+	// Creates a container for a button representing an artist with their name and an image.
 	r, _ := fyne.LoadResourceFromURLString(DataAPI.GetArtistByID(id).Image)
 	img := canvas.NewImageFromResource(r)
 	img.SetMinSize(fyne.NewSize(300, 300))
@@ -144,24 +149,26 @@ func ButtonImg(id int) *fyne.Container {
 }
 
 func FullScreen(window fyne.Window, verifZoombool bool) {
+	// Enables or disables fullscreen mode of the window.
 	fullScreen = !verifZoombool
 	window.SetFullScreen(fullScreen)
 }
 
 func Filter() *widget.RadioGroup {
-	radio := widget.NewRadioGroup([]string{"Trier par Date de creation du groupe. Du plus ancien au plus récent", "Trier par Date de creation du groupe. Du plus récent au plus ancien",
-		"Trier par Date de sortie du premier album. Du plus ancien au plus récent", "Trier par Date de sortie du premier album. Du plus récent au plus ancien",
-		"Trier par Default"}, func(value string) {
+	// Creates a radio button group to select different types of filters.
+	radio := widget.NewRadioGroup([]string{"Sort by Group Creation Date. From oldest to newest", "Sort by Group Creation Date. From newest to oldest",
+		"Sort by Release Date of First Album. From oldest to newest", "Sort by Release Date of First Album. From newest to oldest",
+		"Sort by Default"}, func(value string) {
 		switch value {
-		case "Trier par Date de creation du groupe. Du plus ancien au plus récent":
+		case "Sort by Group Creation Date. From oldest to newest":
 			filtre = 2
-		case "Trier par Date de creation du groupe. Du plus récent au plus ancien":
+		case "Sort by Group Creation Date. From newest to oldest":
 			filtre = 3
-		case "Trier par Date de sortie du premier album. Du plus ancien au plus récent":
+		case "Sort by Release Date of First Album. From oldest to newest":
 			filtre = 4
-		case "Trier par Date de sortie du premier album. Du plus récent au plus ancien":
+		case "Sort by Release Date of First Album. From newest to oldest":
 			filtre = 5
-		case "Trier par Default":
+		case "Sort by Default":
 			filtre = 1
 		}
 		MainPage()
