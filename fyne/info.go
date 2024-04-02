@@ -6,14 +6,13 @@ import (
 	"image/color"
 	"strconv"
 	"strings"
+	"time"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
-	"golang.org/x/text/cases"
-	"golang.org/x/text/language"
 )
 
 var (
@@ -51,7 +50,7 @@ func SecondPage(id int) {
 	})
 
 	nextButton := widget.NewButton("next", func() {
-		if id != 52{
+		if id != 52 {
 			SecondPage(id + 1)
 		}
 	})
@@ -83,29 +82,13 @@ func Location(id int) {
 	DRLINFO.RemoveAll()
 	fmt.Print(buttonstatus)
 	if buttonstatus == 0 {
-		var loca string
-		var list string
-		fr := 0
-		for _, place := range DataAPI.Location(id).Location {
-			locationl := strings.Split(place, "_")
-			locationli := strings.Join(locationl, " ")
-			loca = cases.Title(language.Und).String(locationli)
-			fr = fr + 1
-			if fr == len(DataAPI.Location(id).Location) {
-				list = list + loca
-			} else {
-				list = list + loca + ","
-			}
-		}
-		var testLoca []string = strings.Split(list, ",")
-		for _, varloca := range testLoca {
-			place := varloca
-			contain := widget.NewButton(place,
-				func() {
-					fmt.Print(place)
-					DateLocation(id, place)
-				},
-			)
+		locationList := DataAPI.Location(id).Location
+		for _, location := range locationList {
+			place := strings.Title(strings.Replace(location, "_", " ", -1))
+			contain := widget.NewButton(place, func() {
+				fmt.Print(place)
+				DateLocation(id, place)
+			})
 			DRLINFO.Add(contain)
 		}
 		buttonstatus = 1
@@ -124,21 +107,21 @@ func DateLocation(id int, locate string) {
 	contain = canvas.NewText(" ", color.White)
 	contain.TextSize = 24
 	DRLINFO.Add(contain)
-	varloca := strings.Split(locate, " ")
-	locat := strings.Join(varloca, "_")
-	ocat := strings.ToLower(locat)
-	for location, dates := range DataAPI.Relation(id).DatesLocations {
-		if ocat == location {
-			for _, temp := range dates {
-				datetemp := Date(temp)
-				datetemp = " -" + datetemp
-				contain := canvas.NewText(datetemp, color.White)
-				contain.TextSize = 24
-				contain.Alignment = fyne.TextAlignLeading
-				DRLINFO.Add(contain)
-			}
-		}
+
+	locat := strings.ToLower(strings.Replace(locate, " ", "_", -1))
+	dates, ok := DataAPI.Relation(id).DatesLocations[locat]
+	if !ok {
+		return
 	}
+	for _, temp := range dates {
+		datetemp := Date(temp)
+		datetemp = " -" + datetemp
+		contain := canvas.NewText(datetemp, color.White)
+		contain.TextSize = 24
+		contain.Alignment = fyne.TextAlignLeading
+		DRLINFO.Add(contain)
+	}
+
 	btn := widget.NewButton("Retour", func() {
 		buttonstatus = 0
 		Location(id)
@@ -147,87 +130,51 @@ func DateLocation(id int, locate string) {
 }
 
 func Date(date string) string {
-	var mois string
-	dstring := strings.Split(date, "-")
-	switch dstring[1] {
-	case "01":
-		mois = "janvier"
-	case "02":
-		mois = "février"
-	case "03":
-		mois = "mars"
-	case "04":
-		mois = "avril"
-	case "05":
-		mois = "mai"
-	case "06":
-		mois = "juin"
-	case "07":
-		mois = "juillet"
-	case "08":
-		mois = "août"
-	case "09":
-		mois = "septembre"
-	case "10":
-		mois = "octobre"
-	case "11":
-		mois = "novembre"
-	case "12":
-		mois = "décembre"
+	t, err := time.Parse("2006-01-02", date)
+	if err != nil {
+		return date
 	}
-	dstring[1] = mois
-	ds := strings.Join(dstring, " ")
-	return ds
+	return t.Format(" - 2 janvier 2006")
 }
 
 func InfoGroupe(id int) *fyne.Container {
 	infog := container.NewVBox()
-	var listmember string
-	var listmember2 string
-	i := 0
-	v := 0
+
 	name := "Nom du groupe : " + DataAPI.GetArtistByID(id).Name
 	nameText := canvas.NewText(name, color.White)
 	nameText.TextSize = 24
 	nameText.Alignment = fyne.TextAlignCenter
 	infog.Add(nameText)
+
 	members := DataAPI.GetArtistByID(id).Members
-	y := len(members)
-	for _, member := range members {
-		if i < (y / 2) {
-			listmember = listmember + member + ", "
-		} else if i == (y - 1) {
-			listmember2 = listmember2 + member + ". "
-			v = 1
-		} else if i == (y - 2) {
-			listmember2 = listmember2 + member + " et "
+	var stringmembers string
+	for i, member := range members {
+		if i < len(members)/2 {
+			stringmembers += member + ", "
+		} else if i == len(members)-1 {
+			stringmembers += member + ". "
+		} else if i == len(members)-2 {
+			stringmembers += member + " et "
 		} else {
-			listmember2 = listmember2 + member + ", "
-			v = 1
+			stringmembers += member + ", "
 		}
-		i = i + 1
 	}
-	stringmembers := "Membres du groupe : " + listmember
-	members1 := canvas.NewText(stringmembers, color.White)
-	members1.TextSize = 24
-	members1.Alignment = fyne.TextAlignCenter
-	infog.Add(members1)
-	if v == 1 {
-		stringmember2 := listmember2
-		members2 := canvas.NewText(stringmember2, color.White)
-		members2.TextSize = 24
-		members2.Alignment = fyne.TextAlignCenter
-		infog.Add(members2)
-	}
-	creationdate := "Date de creation du groupe : " + strconv.Itoa(DataAPI.GetArtistByID(id).CreationDate)
+	membersText := canvas.NewText("Membres du groupe : "+stringmembers, color.White)
+	membersText.TextSize = 24
+	membersText.Alignment = fyne.TextAlignCenter
+	infog.Add(membersText)
+
+	creationdate := "Date de création du groupe : " + strconv.Itoa(DataAPI.GetArtistByID(id).CreationDate)
 	creationDate := canvas.NewText(creationdate, color.White)
 	creationDate.TextSize = 24
 	creationDate.Alignment = fyne.TextAlignCenter
 	infog.Add(creationDate)
-	FirstAlbum := "Date de sortie premier album : " + Date(DataAPI.GetArtistByID(id).FirstAlbum)
-	firstAlbum := canvas.NewText(FirstAlbum, color.White)
-	firstAlbum.TextSize = 24
-	firstAlbum.Alignment = fyne.TextAlignCenter
-	infog.Add(firstAlbum)
+
+	firstAlbumDate := "Date de sortie du premier album : " + Date(DataAPI.GetArtistByID(id).FirstAlbum)
+	firstAlbumDateText := canvas.NewText(firstAlbumDate, color.White)
+	firstAlbumDateText.TextSize = 24
+	firstAlbumDateText.Alignment = fyne.TextAlignCenter
+	infog.Add(firstAlbumDateText)
+
 	return infog
 }
