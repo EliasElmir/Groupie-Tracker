@@ -54,6 +54,7 @@ type DataRelations struct {
 	DatesLocations map[string][]string `json:"datesLocations"`
 }
 
+// GetArtistData get every artist information from the api, with a bool to know if it needs to get locations "concertdates" and relations as well
 func GetArtistData(isAllDataNeeded bool) (Artist, error) {
 	var Data Artist
 
@@ -91,6 +92,7 @@ func GetArtistData(isAllDataNeeded bool) (Artist, error) {
 	return Data, err
 }
 
+// GetLocationData get the location of concert of every artist of the api
 func GetLocationData() (LocationIndex, error) {
 	var Data LocationIndex
 	resData, err := http.Get(URL + "/locations")
@@ -110,6 +112,7 @@ func GetLocationData() (LocationIndex, error) {
 	return Data, err
 }
 
+// GetDateData get the date of every artist of the api
 func GetDateData() (DatesIndex, error) {
 	var Data DatesIndex
 	resData, err := http.Get(URL + "/dates")
@@ -129,6 +132,7 @@ func GetDateData() (DatesIndex, error) {
 	return Data, err
 }
 
+// GetRelationsData get the relation of every artist of the api
 func GetRelationsData() (RelationIndex, error) {
 	var Data RelationIndex
 	resData, err := http.Get(URL + "/relation")
@@ -149,6 +153,7 @@ func GetRelationsData() (RelationIndex, error) {
 	return Data, err
 }
 
+// GetDateByID get the date of a specific artist
 func GetDateByID(id int) DataDate {
 	var Data DataDate
 	resData, err := http.Get(URL + "/dates/" + strconv.Itoa(id))
@@ -169,6 +174,7 @@ func GetDateByID(id int) DataDate {
 	return Data
 }
 
+// GetArtistByID get the information of a specific artist with the id
 func GetArtistByID(id int) DataArtist {
 	var Data DataArtist
 	resData, err := http.Get(URL + "/artists/" + strconv.Itoa(id))
@@ -189,6 +195,7 @@ func GetArtistByID(id int) DataArtist {
 	return Data
 }
 
+// GetLocationByID get the location of a concert of a specific artist with the id
 func GetLocationByID(id int) DataLocation {
 	var Data DataLocation
 	resData, err := http.Get(URL + "/locations/" + strconv.Itoa(id))
@@ -212,6 +219,7 @@ func GetLocationByID(id int) DataLocation {
 	return Data
 }
 
+// GetRelationByID get the relation of a specific artist with the id
 func GetRelationByID(id int) DataRelations {
 	var Data DataRelations
 	resData, err := http.Get(URL + "/relation/" + strconv.Itoa(id))
