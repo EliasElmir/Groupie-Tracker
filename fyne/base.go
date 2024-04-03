@@ -3,8 +3,7 @@ package fyne
 import (
 	DataAPI "groupietracker/API" // Import the DataAPI package from the groupietracker/API directory
 	"image/color"
-	"sort"
-	"time"
+	"strings"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
@@ -15,11 +14,12 @@ import (
 )
 
 var (
-	a          int  = 0
-	grid            = container.NewGridWithColumns(5)
-	fullScreen bool = false
-	filtre     int
-	filter     int
+	a             int = 0
+	grid              = container.NewGridWithColumns(5)
+	cachedArtists DataAPI.Artist
+	fullScreen    bool = false
+	filtre        int
+	filter        int
 )
 
 type AppData struct {
@@ -30,7 +30,7 @@ type AppData struct {
 func MainPage() {
 	// Generates the main page of the application with a toolbar, an artists grid, and a search field.
 	myApp.Window.SetFullScreen(fullScreen)
-
+	var backgroundContainer *fyne.Container
 	background := canvas.NewRectangle(color.White)
 
 	if a == 0 {
@@ -60,7 +60,8 @@ func MainPage() {
 
 	switch filter {
 	case 1:
-		loadArtistsIntoGrid(1, 53)
+		artist, _ := DataAPI.GetArtistData(true)
+		grid = loadArtistsIntoGrid(artist)
 	case 2, 3, 4, 5:
 		loadArtistsByFilter(filter)
 	}
@@ -69,67 +70,74 @@ func MainPage() {
 	searchEntry.SetPlaceHolder("Search for an artist...")
 
 	grid2 := container.NewVScroll(grid)
-	gridContent := container.NewMax(grid2)
-
-	full := container.NewBorder(toolBar, nil, nil, nil, gridContent)
-	backgroundContainer := container.NewBorder(searchEntry, nil, nil, nil, background, full)
-	myApp.Window.SetContent(backgroundContainer)
 
 	searchEntry.OnChanged = func(text string) {
-		filterArtistsByText(text)
+		if len(cachedArtists) == 0 {
+			cachedArtists, _ = DataAPI.GetArtistData(true)
+		}
+
+		filteredArtists := filterArtistsByText(text)
+
+		grid = loadArtistsIntoGrid(filteredArtists)
+		backgroundContainer.Objects[1] = container.NewVScroll(grid)
+		myApp.Window.SetContent(backgroundContainer)
+		myApp.Window.Canvas().Refresh(backgroundContainer)
 	}
+
+	backgroundContainer = container.NewBorder(container.NewVBox(searchEntry, toolBar), nil, nil, nil, background, grid2)
+	backgroundContainer.Refresh()
+	myApp.Window.SetContent(backgroundContainer)
 }
 
-func loadArtistsIntoGrid(start, end int) {
-	// Loads artists into the grid.
-	grid.RemoveAll()
-	for id := start; id < end; id++ {
-		grid.Add(ButtonImg(id))
+func loadArtistsIntoGrid(artists DataAPI.Artist) *fyne.Container {
+	var artistCards []fyne.CanvasObject
+
+	for _, artist := range artists {
+		content := ButtonImg(artist.Id)
+
+		card := container.NewVBox(content)
+		artistCards = append(artistCards, card)
 	}
+
+	grid := container.NewGridWithColumns(5, artistCards...)
+
+	return grid
 }
 
 func loadArtistsByFilter(filter int) {
 	// Loads artists into the grid based on a specific filter.
 	grid.RemoveAll()
-	artists := make([]DataAPI.DataArtist, 52)
-	for i := 1; i <= 52; i++ {
-		artists[i-1] = DataAPI.GetArtistByID(i)
-	}
+	artists, _ := DataAPI.GetArtistData(true)
+
 	switch filter {
 	case 2:
-		sort.Slice(artists, func(i, j int) bool {
-			return artists[i].CreationDate < artists[j].CreationDate
-		})
+		grid = loadArtistsIntoGrid(artists)
 	case 3:
-		sort.Slice(artists, func(i, j int) bool {
-			return artists[i].CreationDate > artists[j].CreationDate
-		})
+		grid = loadArtistsIntoGrid(artists)
 	case 4:
-		sort.Slice(artists, func(i, j int) bool {
-			time1, _ := time.Parse("02-01-2006", artists[i].FirstAlbum)
-			time2, _ := time.Parse("02-01-2006", artists[j].FirstAlbum)
-			return time1.Before(time2)
-		})
+		grid = loadArtistsIntoGrid(artists)
 	case 5:
-		sort.Slice(artists, func(i, j int) bool {
-			time1, _ := time.Parse("02-01-2006", artists[i].FirstAlbum)
-			time2, _ := time.Parse("02-01-2006", artists[j].FirstAlbum)
-			return time1.After(time2)
-		})
+		grid = loadArtistsIntoGrid(artists)
 	}
 	for _, artist := range artists {
 		grid.Add(ButtonImg(int(artist.Id)))
 	}
 }
 
-func filterArtistsByText(text string) {
-	// Filters artists based on a search text.
-	filteredArtists, _ := DataAPI.Search(text)
-	grid.RemoveAll()
-	for _, artist := range filteredArtists {
-		grid.Add(ButtonImg(artist.Id))
+func filterArtistsByText(text string) []DataAPI.DataArtist {
+	// Vérifie d'abord si la recherche est vide
+	if text == "" {
+		return cachedArtists
 	}
-	grid.Refresh()
+
+	// Effectue la recherche dans les données cache
+	var filteredArtists []DataAPI.DataArtist
+	for _, artist := range cachedArtists {
+		if strings.Contains(strings.ToLower(artist.Name), strings.ToLower(text)) {
+			filteredArtists = append(filteredArtists, artist)
+		}
+	}
+	return filteredArtists
 }
 
 func ButtonImg(id int) *fyne.Container {
