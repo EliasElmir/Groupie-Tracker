@@ -67,7 +67,7 @@ func SecondPage(id int) {
 
 	content := container.NewVBox(txt, txt, txt, txt, image, txt, txt, txt, txt, txt, txt, txt, txt, txt, GroupeInfo, DRLINFO, favoritesButton)
 
-	content2 := container.NewVBox(homeButton, locationButton, favoritesButton)
+	content2 := container.NewVBox(homeButton, locationButton)
 	centeredContainer2 := container.NewCenter(content2)
 
 	finalcontent := container.NewVBox(content, nxtAndpreButtons, centeredContainer2)

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -315,4 +316,29 @@ func Search(query string) ([]DataArtist, error) {
 	}
 
 	return searchResults, nil
+}
+
+func SortByCreationDateAscending(artists Artist) Artist {
+	sort.Slice(artists, func(i, j int) bool {
+		return artists[i].CreationDate < artists[j].CreationDate
+	})
+	return artists
+}
+
+func SortByCreationDateAndFirstAlbum(artists Artist) Artist {
+	sort.Slice(artists, func(i, j int) bool {
+		if artists[i].CreationDate != artists[j].CreationDate {
+			return artists[i].CreationDate < artists[j].CreationDate
+		}
+		// Si les dates de création sont égales, trie par date du premier album
+		return artists[i].FirstAlbum < artists[j].FirstAlbum
+	})
+	return artists
+}
+
+func SortByNumberOfMembersDescending(artists Artist) Artist {
+	sort.Slice(artists, func(i, j int) bool {
+		return len(artists[i].Members) > len(artists[j].Members)
+	})
+	return artists
 }

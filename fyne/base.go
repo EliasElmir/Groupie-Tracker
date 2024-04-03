@@ -111,16 +111,16 @@ func loadArtistsByFilter(filter int) {
 
 	switch filter {
 	case 2:
-		grid = loadArtistsIntoGrid(artists)
+		grid = loadArtistsIntoGrid(DataAPI.SortByCreationDateAscending(artists))
 	case 3:
-		grid = loadArtistsIntoGrid(artists)
+		grid = loadArtistsIntoGrid(DataAPI.SortByCreationDateAndFirstAlbum(artists))
 	case 4:
-		grid = loadArtistsIntoGrid(artists)
-	case 5:
-		grid = loadArtistsIntoGrid(artists)
-	}
-	for _, artist := range artists {
-		grid.Add(ButtonImg(int(artist.Id)))
+		grid = loadArtistsIntoGrid(DataAPI.SortByNumberOfMembersDescending(artists))
+
+	case 1:
+		for _, artist := range artists {
+			grid.Add(ButtonImg(int(artist.Id)))
+		}
 	}
 }
 
@@ -164,22 +164,21 @@ func FullScreen(window fyne.Window, verifZoombool bool) {
 
 func Filter() *widget.RadioGroup {
 	// Creates a radio button group to select different types of filters.
-	radio := widget.NewRadioGroup([]string{"Sort by Group Creation Date. From oldest to newest", "Sort by Group Creation Date. From newest to oldest",
-		"Sort by Release Date of First Album. From oldest to newest", "Sort by Release Date of First Album. From newest to oldest",
+	radio := widget.NewRadioGroup([]string{"Sort by Group Creation Date.",
+		"Sort by Release Date of First Album.", "Sort by number of members.",
 		"Sort by Default"}, func(value string) {
 		switch value {
-		case "Sort by Group Creation Date. From oldest to newest":
+		case "Sort by Group Creation Date.":
 			filtre = 2
-		case "Sort by Group Creation Date. From newest to oldest":
+		case "Sort by Release Date of First Album.":
 			filtre = 3
-		case "Sort by Release Date of First Album. From oldest to newest":
+		case "Sort by number of members.":
 			filtre = 4
-		case "Sort by Release Date of First Album. From newest to oldest":
-			filtre = 5
 		case "Sort by Default":
 			filtre = 1
 		}
 		MainPage()
 	})
 	return radio
+
 }
