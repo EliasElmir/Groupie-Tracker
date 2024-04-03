@@ -1,27 +1,29 @@
 package DataAPI
 
 import (
-	"strconv"
 	"strings"
 )
 
-// CreationDateFilter filter and return artist corresponding to the parameter of the creation date of the group/artist
-func CreationDateFilter(year string) (Artist, error) {
+// CreationDateFilter filter in ascending order the creation date of all groups
+func CreationDateFilter() (Artist, error) {
 	Data, err := GetArtistData(false)
 	if err != nil {
 		return Data, err
 	}
-	var FilteredData Artist
 	for i := 0; i < len(Data); i++ {
-		if strings.Contains(strconv.Itoa(Data[i].CreationDate), year) {
-			FilteredData = append(FilteredData, Data[i])
+		for j := 0; j < len(Data)-1; j++ {
+			if Data[j].CreationDate > Data[j+1].CreationDate {
+				prevData := Data[j+1]
+				Data[j+1] = Data[j]
+				Data[j] = prevData
+			}
 		}
 	}
 
-	return FilteredData, err
+	return Data, err
 }
 
-// FirstAlbumFilter filter the artist from the year of the first album in the parameter
+// FirstAlbumFilter filter in ascending number the date of the first album
 func FirstAlbumFilter() (Artist, error) {
 	Data, err := GetArtistData(false)
 	if err != nil {
@@ -38,41 +40,41 @@ func FirstAlbumFilter() (Artist, error) {
 	return NewArtistOrder, err
 }
 
-// NbOfMemberFilter filter the artist depending on the number of member of a group/artist
-func NbOfMemberFilter(nbfilter int) (Artist, error) {
+// NbOfMemberFilter filter in ascending order the number of member of a group
+func NbOfMemberFilter() (Artist, error) {
 	Data, err := GetArtistData(false)
 	if err != nil {
 		return Data, err
 	}
-	var FilteredData Artist
+
 	for i := 0; i < len(Data); i++ {
-		if nbfilter == len(Data[i].Members) {
-			FilteredData = append(FilteredData, Data[i])
+		for j := 0; j < len(Data)-1; j++ {
+			if len(Data[j].Members) > len(Data[j+1].Members) {
+				prevData := Data[j+1]
+				Data[j+1] = Data[j]
+				Data[j] = prevData
+			}
 		}
 	}
 
-	return FilteredData, err
+	return Data, err
 }
 
 // LocationFilter filter the artist depending on the location in the parameter
-func LocationFilter(location string) (Artist, error) {
+/*func LocationFilter() (Artist, error) {
 	Data, err := GetArtistData(true)
 	if err != nil {
 		return Data, err
 	}
 
-	var FilteredData Artist
-
 	for i := 0; i < len(Data); i++ {
 		for ConcertLocation, _ := range Data[i].Relations {
-			if strings.Contains(strings.ToLower(ConcertLocation), strings.ToLower(location)) {
-				FilteredData = append(FilteredData, Data[i])
-			}
+
 		}
 	}
 
-	return FilteredData, err
-}
+	return Data, err
+}*/
 
 // sortDates Sort dates in ascending order
 func sortDates(Data Artist, Dates [][]string) Artist {
