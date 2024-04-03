@@ -26,5 +26,4 @@ func home() {
 	content := container.NewVBox(image, testButton)
 	centeredContent := container.NewCenter(content)
 	myApp.Window.SetContent(centeredContent)
-
 }
