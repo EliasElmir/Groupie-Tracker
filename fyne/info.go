@@ -55,14 +55,19 @@ func SecondPage(id int) {
 		if id != 52 {
 			SecondPage(id + 1)
 		}
+
+	})
+
+	favoritesButton := widget.NewButton("Add to Favorites", func() {
+		// DataAPI.AddFavorite(id)
 	})
 
 	nxtAndpreButtons := container.NewHBox(previousbutton, layout.NewSpacer(), nextButton)
 	image := container.NewHBox(txt, img)
 
-	content := container.NewVBox(txt, txt, txt, txt, image, txt, txt, txt, txt, txt, txt, txt, txt, txt, GroupeInfo, DRLINFO)
+	content := container.NewVBox(txt, txt, txt, txt, image, txt, txt, txt, txt, txt, txt, txt, txt, txt, GroupeInfo, DRLINFO, favoritesButton)
 
-	content2 := container.NewVBox(homeButton, locationButton)
+	content2 := container.NewVBox(homeButton, locationButton, favoritesButton)
 	centeredContainer2 := container.NewCenter(content2)
 
 	finalcontent := container.NewVBox(content, nxtAndpreButtons, centeredContainer2)
